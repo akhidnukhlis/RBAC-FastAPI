@@ -3,19 +3,38 @@
 ## Struktur Directory
 ```
 seaside-sentinel/
-│-- app/
-│   │-- models/             # Model database (SQLAlchemy)
-│   │   │-- __init__.py
-│   │   │-- user.py         # Model User
-│   │   │-- role.py         # Model Role
-│   │-- routers/            # Endpoint API
-│   │   │-- __init__.py
-│   │   │-- user.py         # Route User
-│   │   │-- auth.py         # Route Authentication
+│-- app/        
 │   │-- core/
 │   │   │-- __init__.py
-│   │   │-- database.py     # Koneksi ke database
-│   │   │-- config.py       # Konfigurasi aplikasi
+│   │   │-- database.py     
+│   │   │-- config.py
+│   │-- middleware/
+│   │   │-- __init__.py
+│   │   │-- auth_middleware.py     
+│   │   │-- permission_middleware.py
+│   │-- models/             
+│   │   │-- __init__.py
+│   │   │-- user.py         
+│   │   │-- role.py         
+│   │-- repositories/       
+│   │   │-- __init__.py
+│   │   │-- user.py         
+│   │   │-- role.py         
+│   │-- routers/            
+│   │   │-- __init__.py
+│   │   │-- user.py         
+│   │   │-- auth.py         
+│   │-- schemas/            
+│   │   │-- __init__.py
+│   │   │-- user.py         
+│   │   │-- role.py         
+│   │-- services/           
+│   │   │-- __init__.py
+│   │   │-- user.py         
+│   │   │-- role.py         
+│   │-- utilities/          
+│   │   │-- __init__.py
+│   │   │-- utils.py     
 │   │-- main.py             # Entry point FastAPI
 │-- migrations/             # Folder migrasi Alembic
 │-- env/                    # Virtual Environment
