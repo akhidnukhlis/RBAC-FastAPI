@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models.role import Role
-from app.models.permission import Permission
+from app.models.roles import Role
+from app.models.permissions import Permission
 
 def seed_roles(db: Session):
     roles = [

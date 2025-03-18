@@ -39,3 +39,7 @@ nb-configuration.xml
 # Local environment
 .env
 /venv/
+
+logs/app.log
+
+logs/
