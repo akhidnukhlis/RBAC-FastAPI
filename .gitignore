@@ -41,3 +41,5 @@ nb-configuration.xml
 /venv/
 
 logs/app.log
+
+logs/
