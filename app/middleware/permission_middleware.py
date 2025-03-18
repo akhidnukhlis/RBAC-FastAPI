@@ -2,14 +2,14 @@ import jwt
 from fastapi import Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.repositories.role_permission import check_role_permission
+from app.repositories.role_permissions import check_role_permission
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
 
 security = HTTPBearer()
 
 
-def require_permission(permission_id: int):
+def PermissionMiddleware(permission_id: int):
     def permission_dependency(
             credentials: HTTPAuthorizationCredentials = Security(security),
             db: Session = Depends(get_db)

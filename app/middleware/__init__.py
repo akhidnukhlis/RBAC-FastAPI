@@ -1,2 +1,2 @@
-from .auth_middleware import LoggingMiddleware, auth_middleware
-from .permission_middleware import require_permission
+from .auth_middleware import LoggingMiddleware, AuthMiddleware
+from .permission_middleware import PermissionMiddleware

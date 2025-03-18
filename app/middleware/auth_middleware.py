@@ -8,7 +8,7 @@ from app.core.database import get_db
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.repositories.user import get_user_by_access_token
+from app.repositories.users import get_user_by_access_token
 from app.core.config import settings
 
 security = HTTPBearer()
@@ -53,6 +53,6 @@ def verify_token(token: str, db: Session):
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def auth_middleware(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+def AuthMiddleware(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
     token = credentials.credentials
     return verify_token(token, db)

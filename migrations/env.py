@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.core.database import Base
+from app.core.database import Base, create_schema_if_not_exists
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -67,6 +67,8 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
+        create_schema_if_not_exists("tenant_schema")
+
         context.configure(
             connection=connection, target_metadata=target_metadata
         )
