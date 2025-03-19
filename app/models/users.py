@@ -17,7 +17,7 @@ class User(Base):
 
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     created_by = Column(String(255), nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=True), nullable=True)
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_by = Column(String(255), nullable=True)
     deleted_at = Column(TIMESTAMP(timezone=True), nullable=True)
     deleted_by = Column(String(255), nullable=True)
