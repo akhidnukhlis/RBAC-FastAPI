@@ -1,8 +1,8 @@
-"""fix forenky  at orders
+"""Initial migration
 
-Revision ID: 35204085c03e
-Revises: 1859b1ce1acb
-Create Date: 2025-03-18 13:47:57.675666
+Revision ID: 1f16b6937b04
+Revises: 
+Create Date: 2025-03-19 08:13:20.648028
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '35204085c03e'
-down_revision: Union[str, None] = '1859b1ce1acb'
+revision: str = '1f16b6937b04'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
