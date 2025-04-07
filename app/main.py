@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from socketio import Middleware
 
 from app.core.database import engine, Base
-from app.routers import users, roles, auth, permissions, role_permissions, products, orders, notes
+from app.routers import users, roles, auth, permissions, role_permissions, products, orders, notes, tenants
 from app.middleware.auth_middleware import LoggingMiddleware
 from app.middleware.tenant_middleware import TenantMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -42,6 +42,7 @@ app.include_router(role_permissions.router, prefix="/api")
 app.include_router(products.router, prefix="/api")
 app.include_router(orders.router, prefix="/api")
 app.include_router(notes.router, prefix="/api")
+app.include_router(tenants.router, prefix="/api")
 
 
 @app.get("/")

@@ -12,5 +12,5 @@ class RolePermission(Base):
 
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     created_by = Column(String(255), nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
     updated_by = Column(String(255), nullable=True)

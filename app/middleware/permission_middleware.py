@@ -8,7 +8,6 @@ from app.core.config import settings
 
 security = HTTPBearer()
 
-
 def PermissionMiddleware(permission_id: int):
     def permission_dependency(
             credentials: HTTPAuthorizationCredentials = Security(security),

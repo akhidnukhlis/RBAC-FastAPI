@@ -1,6 +1,6 @@
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from sqlalchemy.ext.declarative import declared_attr
 
 class TenantMixin:
-    __table_args__ = {"schema": None}
+    @declared_attr
+    def __table_args__(cls):
+        return {"schema": cls.__tenant_schema__}
