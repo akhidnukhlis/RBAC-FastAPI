@@ -38,8 +38,12 @@ nb-configuration.xml
 
 # Local environment
 .env
+/env/
 /venv/
+/.venv/
 
 logs/app.log
 
 logs/
+__pycache__/
+*.py[cod]
