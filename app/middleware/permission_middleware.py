@@ -1,35 +1,33 @@
-import jwt
-from fastapi import Depends, HTTPException, Security
-from sqlalchemy.orm import Session
-from app.core.database import get_db
-from app.repositories.role_permissions import check_role_permission
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.core.config import settings
+from fastapi import Request, HTTPException, Depends
+from app.middleware.auth_middleware import auth_handler
 
-security = HTTPBearer()
+from app.core.database import db_manager
+from app.repositories import role_permission_repository
 
+class PermissionMiddleware:
+    def __init__(self, required_permission_id: int):
+        self.required_permission_id = required_permission_id
 
-def PermissionMiddleware(permission_id: int):
-    def permission_dependency(
-            credentials: HTTPAuthorizationCredentials = Security(security),
-            db: Session = Depends(get_db)
-    ):
-        try:
-            payload = jwt.decode(credentials.credentials, settings.SECRET_KEY, algorithms=["HS256"])
-            role_id = payload.get("role_id")
+    async def __call__(self, request: Request, user_data: dict = Depends(auth_handler)):
+        if not user_data:
+             raise HTTPException(status_code=401, detail="Unauthorized")
 
-            if role_id is None:
-                raise HTTPException(status_code=401, detail="Invalid token: role_id not found")
+        role_id = user_data.get("role_id")
+        if not role_id:
+            raise HTTPException(status_code=403, detail="Forbidden: User has no role assigned")
 
-            if not check_role_permission(db, role_id, permission_id):
-                raise HTTPException(status_code=403, detail="You do not have permission to access this resource")
-
+        # Check Superadmin (Role ID 1) - Bypass check
+        if role_id == 1:
             return True
 
-        except jwt.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail="Token has expired")
+        # Check Permission in Database
+        # Note: In high traffic apps, cache this check (Redis) or put permissions in JWT
+        db = next(db_manager.get_db())
+        repo = role_permission_repository.RolePermissionRepository(db)
+        
+        has_permission = repo.check_permission_exists(role_id, self.required_permission_id)
+        
+        if not has_permission:
+            raise HTTPException(status_code=403, detail="Forbidden: You do not have permission to access this resource")
 
-        except jwt.InvalidTokenError:
-            raise HTTPException(status_code=401, detail="Invalid token")
-
-    return permission_dependency
+        return True

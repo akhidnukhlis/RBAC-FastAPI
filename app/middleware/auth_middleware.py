@@ -1,58 +1,63 @@
-import time
 import datetime
-import jwt
-import logging
+from jose import jwt
 from sqlalchemy.orm import Session
-from fastapi import Request
-from app.core.database import get_db
-from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi import Depends, HTTPException, Security
+from fastapi import HTTPException, Security, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.repositories.users import get_user_by_access_token
 from app.core.config import settings
+from app.core.database import db_manager
+from app.repositories.user_repository import UsersRepository
 
-security = HTTPBearer()
+class AuthService:
+    def __init__(self):
+        self.security = HTTPBearer()
+        self.secret_key = settings.SECRET_KEY
+        self.algorithm = settings.ALGORITHM
 
-logging.basicConfig(filename="logs/app.log", level=logging.INFO,
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+    def verify_token(self, token: str, db: Session):
+        """
+        Logika inti untuk memverifikasi token JWT dan keberadaan user di database.
+        """
+        try:
+            # 1. Decode Payload
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            
+            # 2. Cek User berdasarkan token di DB
+            user_repo = UsersRepository(db)
+            user = user_repo.get_user_by_access_token(token)
+            if not user:
+                raise HTTPException(status_code=401, detail="Unauthorized: User not found or token invalid")
 
-class LoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        start_time = time.time()
-        response = await call_next(request)
-        process_time = time.time() - start_time
+            # 3. Cek Expiration (Opsional jika jwt.decode sudah memvalidasi 'exp')
+            exp_time = datetime.datetime.utcfromtimestamp(payload.get("exp"))
+            if datetime.datetime.utcnow() > exp_time:
+                raise HTTPException(status_code=401, detail="Access token expired")
 
-        print(f"Request to {request.url.path} took {process_time:.2f} sec")
+            # 4. Return data user yang dibutuhkan
+            return {
+                "user_id": user.id,
+                "role_id": user.role_id,
+                "status_id": user.status_id,
+                "email": user.email,
+            }
 
-        log_message = f"{request.method} {request.url.path} - {response.status_code} - {process_time:.4f}s"
-        logging.info(log_message)
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token expired")
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        except Exception as e:
+            raise HTTPException(status_code=401, detail=f"Could not validate credentials: {str(e)}")
 
-        return response
+    async def __call__(
+        self, 
+        credentials: HTTPAuthorizationCredentials = Security(HTTPBearer()), 
+        db: Session = Depends(db_manager.get_db)
+    ):
+        """
+        Method __call__ membuat class ini bisa langsung digunakan 
+        sebagai Dependency di FastAPI: Depends(AuthService())
+        """
+        token = credentials.credentials
+        return self.verify_token(token, db)
 
-def verify_token(token: str, db: Session):
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        user = get_user_by_access_token(db, token)
-
-        if not user:
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
-        exp_time = datetime.datetime.utcfromtimestamp(payload.get("exp"))
-        if datetime.datetime.utcnow() > exp_time:
-            raise HTTPException(status_code=401, detail="Access token expired")
-
-        return {
-            "user_id": user.id,
-            "role_id": user.role_id,
-            "status_id": user.status_id,
-            "email": user.email,
-        }
-
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-def AuthMiddleware(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
-    token = credentials.credentials
-    return verify_token(token, db)
+# Inisialisasi instance untuk digunakan di router
+auth_handler = AuthService()
