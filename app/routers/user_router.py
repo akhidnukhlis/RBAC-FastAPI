@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 from fastapi_pagination import paginate
+from fastapi_pagination.utils import disable_installed_extensions_check
 from app.utils.pagination import CustomPage as Page
 from sqlalchemy.orm import Session
-from app.schemas import user_schema 
+from app.schemas import user_schema
 from app.core.database import db_manager as DBManager # Menggunakan class DatabaseManager kita
 from app.services.user_service import UserService # Menggunakan class UserService kita
 from app.middleware.permission_middleware import PermissionMiddleware
@@ -14,10 +15,11 @@ router = APIRouter(prefix="/users", tags=["Users"])
 def get_user_service(db: Session = Depends(DBManager.get_db)):
     return UserService(db)
 
-@router.get("/", 
-    dependencies=[Depends(auth_handler), Depends(PermissionMiddleware(2))], 
+@router.get("/",
+    dependencies=[Depends(auth_handler), Depends(PermissionMiddleware(2))],
     response_model=Page[user_schema.UserResponse])
 def list_users(service: UserService = Depends(get_user_service)):
+    disable_installed_extensions_check()
     return paginate(service.list_all())
 
 @router.post("/", 
