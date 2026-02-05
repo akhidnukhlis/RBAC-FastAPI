@@ -31,10 +31,19 @@ class RoleInfo(BaseModel):
         "populate_by_name": True
     }
 
+class StatusInfo(BaseModel):
+    id: int
+    name: str = Field(validation_alias="name")
+
+    model_config = {
+        "from_attributes": True,
+        "populate_by_name": True
+    }
+
 class UserResponse(UserBase):
     id: str
     role: Optional[RoleInfo] = None
-
+    status: Optional[StatusInfo] = None
 
     model_config = {
         "from_attributes": True

@@ -4,6 +4,7 @@ from app.schemas import user_schema
 from app.models import user_model
 from app.core.security import security_manager
 
+
 class UsersRepository:
     def __init__(self, db: Session):
         """
@@ -25,10 +26,16 @@ class UsersRepository:
         return db_user
 
     def get_users(self) -> List[user_model.User]:
-        return self.db.query(user_model.User).options(joinedload(user_model.User.role)).all()
+        return self.db.query(user_model.User).options(
+            joinedload(user_model.User.role),
+            joinedload(user_model.User.status)
+        ).all()
 
     def get_user_by_email(self, email: str) -> Optional[user_model.User]:
-        return self.db.query(user_model.User).options(joinedload(user_model.User.role)).filter(user_model.User.email == email).first()
+        return self.db.query(user_model.User).options(
+            joinedload(user_model.User.role),
+            joinedload(user_model.User.status)
+        ).filter(user_model.User.email == email).first()
 
     def update_user(self, user_id: str, user: user_schema.UserUpdate) -> Optional[user_model.User]:
         db_user = self.db.query(user_model.User).filter(user_model.User.id == user_id).first()
@@ -41,7 +48,7 @@ class UsersRepository:
             db_user.status_id = user.status_id
         if user.is_active is not None:
             db_user.is_active = user.is_active
-        
+
         self.db.commit()
         self.db.refresh(db_user)
         return db_user
@@ -65,7 +72,7 @@ class UsersRepository:
 
     def get_user_by_access_token(self, token: str) -> Optional[user_model.User]:
         return self.db.query(user_model.User).filter(
-            user_model.User.access_token == token, 
+            user_model.User.access_token == token,
             user_model.User.is_active == True
         ).first()
 
