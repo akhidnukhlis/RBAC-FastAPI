@@ -26,6 +26,11 @@ class UserService:
 
     def login(self, login_data: user_schema.UserLogin) -> Optional[Dict[str, str]]:
         """Proses autentikasi dan pembuatan token."""
+        # Validasi: Cek apakah email terdaftar
+        user_exists = self.repo.get_user_by_email(login_data.email)
+        if not user_exists:
+            raise HTTPException(status_code=400, detail="Email is not registered")
+
         authenticated_user = self.repo.authenticate_user(
             login_data.email, login_data.password
         )

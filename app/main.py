@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware # Import middleware CORS
 from fastapi_pagination import add_pagination
 from app.routers import user_router as users, auth_router, role_router, permission_router, role_permission_router
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from app.utils.exception_handlers import http_exception_handler, validation_exception_handler, database_exception_handler
+from sqlalchemy.exc import OperationalError
 from app.core.config import settings # Asumsi kamu menyimpan daftar origin di config
 
 app = FastAPI(title="RBAC FastAPI")
@@ -14,6 +18,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- Global Exception Handlers ---
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(OperationalError, database_exception_handler)
 
 # --- Register Router ---
 app.include_router(users.router)

@@ -13,7 +13,10 @@ class RolePermissionService:
         self.perm_repo = permission_repository.PermissionRepository(db)
 
     def assign_permissions(self, data: role_permission_schema.RolePermissionBatchCreate):
-        """Assign multiple permissions to a role. Skips duplicates."""
+        """
+        Memberikan beberapa permission sekaligus ke sebuah role.
+        Melewati (skip) permission yang duplikat atau tidak valid.
+        """
         # 1. Validasi Role exist
         if not self.role_repo.get_role_by_id(data.role_id):
             raise HTTPException(status_code=404, detail="Role not found")
@@ -33,7 +36,9 @@ class RolePermissionService:
         return {"message": f"Successfully assigned {len(valid_perms)} permissions to Role ID {data.role_id}"}
 
     def revoke_permission(self, role_id: int, permission_id: int):
-        """Revoke specific permission from a role."""
+        """
+        Mencabut permission tertentu dari sebuah role.
+        """
         if not self.repo.check_permission_exists(role_id, permission_id):
              raise HTTPException(status_code=404, detail="Permission not assigned to this role")
         
@@ -41,7 +46,9 @@ class RolePermissionService:
         return {"message": "Permission revoked successfully"}
 
     def get_role_permissions(self, role_id: int):
-        """Get all permissions assigned to a role."""
+        """
+        Mendapatkan semua permission yang dimiliki oleh role.
+        """
         if not self.role_repo.get_role_by_id(role_id):
             raise HTTPException(status_code=404, detail="Role not found")
             
