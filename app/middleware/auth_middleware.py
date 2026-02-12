@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.core.database import db_manager
 from app.repositories.user_repository import UsersRepository
 
-class AuthService:
+class AuthMiddleware:
     def __init__(self):
         self.security = HTTPBearer()
         self.secret_key = settings.SECRET_KEY
@@ -42,7 +42,7 @@ class AuthService:
 
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="Token expired")
-        except jwt.InvalidTokenError:
+        except jwt.JWTError:
             raise HTTPException(status_code=401, detail="Invalid token")
         except Exception as e:
             raise HTTPException(status_code=401, detail=f"Could not validate credentials: {str(e)}")
@@ -54,10 +54,10 @@ class AuthService:
     ):
         """
         Method __call__ membuat class ini bisa langsung digunakan 
-        sebagai Dependency di FastAPI: Depends(AuthService())
+        sebagai Dependency di FastAPI: Depends(AuthMiddleware())
         """
         token = credentials.credentials
         return self.verify_token(token, db)
 
 # Inisialisasi instance untuk digunakan di router
-auth_handler = AuthService()
+auth_handler = AuthMiddleware()

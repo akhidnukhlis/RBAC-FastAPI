@@ -11,6 +11,9 @@ class RoleRepository:
         self.db = db
 
     def create_role(self, role: role_schema.RoleCreate) -> role_model.Role:
+        """
+        Membuat role baru.
+        """
         db_role = role_model.Role(
             name=role.name,
             code=role.code,
@@ -22,18 +25,33 @@ class RoleRepository:
         return db_role
 
     def get_roles(self) -> List[role_model.Role]:
-        return self.db.query(role_model.Role).all()
+        """
+        Mengambil semua role yang terdaftar.
+        """
+        return self.db.query(role_model.Role)
 
     def get_role_by_id(self, role_id: int) -> Optional[role_model.Role]:
+        """
+        Mencari role berdasarkan ID.
+        """
         return self.db.query(role_model.Role).filter(role_model.Role.id == role_id).first()
 
     def get_role_by_code(self, code: str) -> Optional[role_model.Role]:
+        """
+        Mencari role berdasarkan kodenya (unik).
+        """
         return self.db.query(role_model.Role).filter(role_model.Role.code == code).first()
     
     def get_role_by_name(self, name: str) -> Optional[role_model.Role]:
+        """
+        Mencari role berdasarkan nama.
+        """
         return self.db.query(role_model.Role).filter(role_model.Role.name == name).first()
 
     def update_role(self, role_id: int, role: role_schema.RoleUpdate) -> Optional[role_model.Role]:
+        """
+        Update informasi role.
+        """
         db_role = self.get_role_by_id(role_id)
         if not db_role:
             return None
@@ -50,6 +68,9 @@ class RoleRepository:
         return db_role
 
     def delete_role(self, role_id: int) -> bool:
+        """
+        Menghapus role.
+        """
         db_role = self.get_role_by_id(role_id)
         if not db_role:
             return False

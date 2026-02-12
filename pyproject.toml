@@ -1,26 +1,27 @@
-[tool.poetry]
-name = "RBAC-FastAPI"
+[project]
+name = "rbac-fastapi"
 version = "0.1.0"
 description = "RBAC FastAPI"
-authors = ["Admin <admin@example.com>"]
 readme = "README.md"
-package-mode = false
-
-[tool.poetry.dependencies]
-python = "^3.10"
-fastapi = "~0.115.8"
-sqlalchemy = "~2.0.38"
-pydantic = "~2.10.6"
-alembic = "~1.14.1"
-python-dotenv = "1.0.1"
-uvicorn = "0.27.1"
-psycopg2-binary = "^2.9.9"
-fastapi-pagination = "^0.12.32"
-email-validator = ">=2.0.0"
-python-jose = {extras = ["cryptography"], version = "^3.5.0"}
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-argon2-cffi = "^25.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.8",
+    "sqlalchemy>=2.0.38",
+    "pydantic>=2.10.6",
+    "alembic>=1.14.1",
+    "python-dotenv==1.0.1",
+    "uvicorn==0.27.1",
+    "psycopg2-binary>=2.9.9",
+    "fastapi-pagination>=0.12.32",
+    "email-validator>=2.0.0",
+    "python-jose[cryptography]>=3.5.0",
+    "passlib[bcrypt]>=1.7.4",
+    "argon2-cffi>=25.1.0",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

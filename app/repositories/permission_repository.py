@@ -11,6 +11,9 @@ class PermissionRepository:
         self.db = db
 
     def create_permission(self, permission: permission_schema.PermissionCreate) -> permission_model.Permission:
+        """
+        Membuat permission baru di database.
+        """
         db_permission = permission_model.Permission(
             name=permission.name,
             code=permission.code,
@@ -22,18 +25,33 @@ class PermissionRepository:
         return db_permission
 
     def get_permissions(self) -> List[permission_model.Permission]:
-        return self.db.query(permission_model.Permission).all()
+        """
+        Mengambil semua data permission dari database.
+        """
+        return self.db.query(permission_model.Permission)
 
     def get_permission_by_id(self, permission_id: int) -> Optional[permission_model.Permission]:
+        """
+        Mencari permission berdasarkan ID.
+        """
         return self.db.query(permission_model.Permission).filter(permission_model.Permission.id == permission_id).first()
 
     def get_permission_by_code(self, code: str) -> Optional[permission_model.Permission]:
+        """
+        Mencari permission berdasarkan kode unik.
+        """
         return self.db.query(permission_model.Permission).filter(permission_model.Permission.code == code).first()
     
     def get_permission_by_name(self, name: str) -> Optional[permission_model.Permission]:
+        """
+        Mencari permission berdasarkan nama.
+        """
         return self.db.query(permission_model.Permission).filter(permission_model.Permission.name == name).first()
 
     def update_permission(self, permission_id: int, permission: permission_schema.PermissionUpdate) -> Optional[permission_model.Permission]:
+        """
+        Memperbarui data permission yang sudah ada.
+        """
         db_permission = self.get_permission_by_id(permission_id)
         if not db_permission:
             return None
@@ -50,6 +68,9 @@ class PermissionRepository:
         return db_permission
 
     def delete_permission(self, permission_id: int) -> bool:
+        """
+        Menghapus permission dari database.
+        """
         db_permission = self.get_permission_by_id(permission_id)
         if not db_permission:
             return False

@@ -21,6 +21,10 @@ def assign_permissions(
     data: role_permission_schema.RolePermissionBatchCreate, 
     service: RolePermissionService = Depends(get_service)
 ):
+    """
+    Memberikan satu atau lebih permission ke user/role.
+    Requires: RolePermission:Create (Level 18)
+    """
     return service.assign_permissions(data)
 
 @router.get("/{role_id}", 
@@ -32,6 +36,10 @@ def get_role_permissions(
     role_id: int, 
     service: RolePermissionService = Depends(get_service)
 ):
+    """
+    Melihat daftar permission dari sebuah role.
+    Requires: RolePermission:Read (Level 19)
+    """
     return service.get_role_permissions(role_id)
 
 @router.delete("/{role_id}/{permission_id}", 
@@ -43,4 +51,8 @@ def revoke_permission(
     permission_id: int, 
     service: RolePermissionService = Depends(get_service)
 ):
+    """
+    Mencabut permission dari role.
+    Requires: RolePermission:Delete (Level 20)
+    """
     return service.revoke_permission(role_id, permission_id)

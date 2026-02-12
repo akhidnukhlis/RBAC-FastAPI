@@ -45,7 +45,17 @@ RBAC-FastAPI/
 
 ## 🚀 Instalasi & Setup
 
-Project ini menggunakan **Poetry** untuk manajemen dependensi.
+Project ini menggunakan **uv** untuk manajemen dependensi yang modern dan sangat cepat.
+
+### 🖥️ Pengguna Windows (WSL)
+
+Untuk pengguna Windows, project ini **sangat disarankan** untuk dijalankan di lingkungan **WSL2 (Windows Subsystem for Linux)**. Hal ini untuk memastikan skrip otomatisasi (seperti `Makefile`) dan toolchain `uv` berjalan dengan optimal selayaknya di sistem Unix/Linux.
+
+1.  **Install WSL**: Buka PowerShell (Admin) dan jalankan `wsl --install`.
+2.  **Environment**: Lakukan seluruh proses instalasi di bawah ini di dalam terminal WSL (Ubuntu/Debian).
+3.  **Tips:** Gunakan extension **"WSL"** di VS Code untuk membuka folder project ini (`code .`) langsung dari terminal WSL.
+
+---
 
 1.  **Clone Repository:**
     ```bash
@@ -55,7 +65,7 @@ Project ini menggunakan **Poetry** untuk manajemen dependensi.
 
 2.  **Install Dependencies:**
     ```bash
-    poetry install
+    uv sync
     ```
 
 3.  **Setup Environment:**
@@ -64,10 +74,21 @@ Project ini menggunakan **Poetry** untuk manajemen dependensi.
     cp .env.example .env
     ```
 
+    **Konfigurasi Database (.env):**
+    Pastikan Anda mengatur variabel berikut agar aplikasi dapat terhubung ke PostgreSQL:
+    
+    | Variable | Deskripsi | Contoh |
+    | :--- | :--- | :--- |
+    | `POSTGRES_HOST` | Host/IP Database | `localhost` |
+    | `POSTGRES_USER` | Username Database | `postgres` |
+    | `POSTGRES_PASSWORD` | Password Database | `password` |
+    | `POSTGRES_DB` | Nama Database | `boilerplate_db` |
+    | `POSTGRES_PORT` | Port Database | `5432` |
+
 4.  **Jalankan Database Migration & Seeder:**
     Perintah ini akan membuat semua tabel dan mengisi data awal (Role, Permission, Status, Superadmin).
     ```bash
-    poetry run alembic upgrade head
+    uv run alembic upgrade head
     ```
 
 ---
@@ -77,7 +98,7 @@ Project ini menggunakan **Poetry** untuk manajemen dependensi.
 Jalankan server development dengan hot-reload:
 
 ```bash
-poetry run uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 ```
 
 Akses dokumentasi interaktif API (Swagger UI):
@@ -98,16 +119,33 @@ Setelah menjalankan migration, gunakan akun ini untuk login pertama kali:
 
 ## 🛠️ Pengembangan (Development Guide)
 
-### Membuat Tabel/Fitur Baru:
+### Menggunakan Makefile (Shortcut)
+Agar lebih efisien, Anda dapat menggunakan perintah berikut alih-alih mengetik panjang di terminal:
+
+| Perintah | Fungsi | Ekuivalen dengan |
+| :--- | :--- | :--- |
+| `make install` | Install dependencies | `uv sync` |
+| `make dev` | Jalankan server (dev) | `uv run uvicorn app.main:app --reload` |
+| `make migrate` | Jalankan migrasi DB | `uv run alembic upgrade head` |
+| `make migration msg="pesan"` | Buat migrasi baru | `uv run alembic revision ...` |
+| `make clean` | Bersihkan cache | `find . -name "__pycache__" ...` |
+
+Contoh penggunaan:
+```bash
+make dev
+make migration msg="tambah tabel produk"
+```
+
+### Membuat Tabel/Fitur Baru (Manual):
 1.  Buat Model di `app/models/`.
 2.  Jangan lupa import model baru di `migrations/env.py`.
 3.  Jalankan perintah generate migration:
     ```bash
-    poetry run alembic revision --autogenerate -m "nama_fitur_baru"
+    uv run alembic revision --autogenerate -m "nama_fitur_baru"
     ```
 4.  Apply ke database:
     ```bash
-    poetry run alembic upgrade head
+    uv run alembic upgrade head
     ```
 
 ### Fitur RBAC (Permission):
