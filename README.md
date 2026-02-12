@@ -124,15 +124,20 @@ Agar lebih efisien, Anda dapat menggunakan perintah berikut alih-alih mengetik p
 
 | Perintah | Fungsi | Ekuivalen dengan |
 | :--- | :--- | :--- |
+| `make help` | Tampilkan bantuan | - |
 | `make install` | Install dependencies | `uv sync` |
-| `make dev` | Jalankan server (dev) | `uv run uvicorn app.main:app --reload` |
+| `make dev` | Jalankan server (dev) | `uv run uvicorn ... --reload` |
+| `make run` | Jalankan server (prod) | `uv run uvicorn ...` |
 | `make migrate` | Jalankan migrasi DB | `uv run alembic upgrade head` |
 | `make migration msg="pesan"` | Buat migrasi baru | `uv run alembic revision ...` |
 | `make clean` | Bersihkan cache | `find . -name "__pycache__" ...` |
 
+**Catatan:** Anda bisa menambahkan variabel `HOST` dan `PORT` saat menjalankan server.
+
 Contoh penggunaan:
 ```bash
 make dev
+make dev HOST=0.0.0.0 PORT=8000
 make migration msg="tambah tabel produk"
 ```
 
